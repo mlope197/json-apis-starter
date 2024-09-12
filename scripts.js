@@ -4,6 +4,7 @@ function validateData(e){
 
     // get the word that the user entered in the input, store in variable named word
     // TO DO
+    let word = document.getElementById("my-word").value;
 
     word = word.trim();
 
@@ -13,6 +14,7 @@ function validateData(e){
     }else{
         // if the word is valid, let's make our call to the function that works with the API
         // TO DO
+        getWord(word);
     }
 }
 
@@ -20,21 +22,66 @@ function getWord(word){
 
     // places on the page used for output
     // TO DO
+    let outputSection = document.getElementById("output");
+    let userWord = document.querySelector("#user-word span");
+    let display = document.getElementById("display-word-info");
+
 
     // un-hide the output section
     // TO DO
-
+    outputSection.classList.remove("hidden");
     // clear the list of any previous output
     resetDisplay();
 
     // create ajax object
     // TO DO
-
+    const data = null;
+    const xhr = new XMLHttpRequest();
     // set withCredentials property on ajax object to true (we will access with a key)
     // TO DO
+        xhr.withCredentials = true;
 
     // ready state change event listener
     // TO DO
+        xhr.addEventListener('readystatechange', function(){
+            if(this.readyState === this.DONE){
+                    console.log(this.responseText);
+
+                let wordInfo = JSON.parse(this.responseText);
+
+                if(wordInfo.hasOwnProperty("query")|| wordInfo.success==false){
+                     userword.innerHTML = `<strong> ${word} </strong> is not a valid word`;
+
+                     resetDisplay();
+
+                     display.innerHTML = `<li>Please Enter a new word and try again</li>`;
+                }
+                else{
+                    userWord.innerHTML = `<strong> ${word} </strong>`;
+
+                     resetDisplay();
+
+                     for(let object of wordInfo.results){
+                        display.innerHTML += `<li>
+                                                        ${object.definition}
+                                                        <ul>
+                                                            <li><strong>part of speech:</strong> ${object.partOfSpeech}; </li>
+                                                        </ul>
+                                                    </li>`
+                     }
+                }
+            }
+        });
+        
+        let path = "https://wordsapiv1.p.rapidapi.com/words/";
+
+        let URL = `${path}${word}`;
+
+        xhr.open('GET', URL);
+        xhr.setRequestHeader('x-rapidapi-key', 'df89e32c09mshf69a2dfbaefc3ebp1de1c8jsnea0ff3d093d7');
+        xhr.setRequestHeader('x-rapidapi-host', 'wordsapiv1.p.rapidapi.com');
+
+        xhr.send(data);
         // when we get a response...
         // TO DO
             // log the returned text to the console
@@ -70,9 +117,7 @@ function getWord(word){
                 // clear the user input to make room for another word
                 resetInput();
             }
-        }
-    });
-
+        
     // start of endpoint to API
     // TO DO
 
@@ -88,7 +133,7 @@ function getWord(word){
 
     // send the request to the API
     // TO DO
-}
+
 
 // this helper function clears out the input and output for the user word
 function resetInput(){
